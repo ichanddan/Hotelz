@@ -15,9 +15,36 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import { register } from "@/Api";
+// import {register} from '../../../Api/index'
 export default function Register() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(event.currentTarget);
+    const userData = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+
+    try {
+      const response = await register(userData);
+      console.log(response);
+      if (response) {
+        toast.success("Registration successful");
+        router.push("/auth/login");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className="container mx-auto flex items-center justify-center min-h-screen p-4">
@@ -26,7 +53,7 @@ export default function Register() {
           <CardTitle className="text-2xl">Create an account</CardTitle>
           <CardDescription>Enter your details to register</CardDescription>
         </CardHeader>
-        <form>
+        <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
